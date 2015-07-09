@@ -43,3 +43,4 @@ Temporary Items
 .apdisk
 Androidpntomcat/WebRoot/WEB-INF/classes/org/androidpn/server/xmpp/handler/IQAuthHandler.class
 *.class
+*.class

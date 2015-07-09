@@ -19,10 +19,13 @@ package org.androidpn.server.util;
 
 import java.util.List;
 
-/** 
- * Utility class to obtain the values from configruation.
+/**
+ * 配置获取数据的工具类  
+ * <br> 实现了获取Configuration   
+ * <br> 对外提供了get配置文件参数的接口    
+ * <br> 例Config.getString("xmpp.domain", "127.0.0.1")就可获取到 config.properties的xmpp.domain属性值（这里没配就返回默认值127.。。。）
+ * @author Administrator
  *
- * @author Sehwan Noh (devnoh@gmail.com)
  */
 public class Config {
 

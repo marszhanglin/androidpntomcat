@@ -75,7 +75,7 @@ public class SessionManager {
 
     /**
      * Creates a new ClientSession and returns it.
-     *  
+     *  创建会话
      * @param conn the connection
      * @return a newly created session
      */

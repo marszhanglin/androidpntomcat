@@ -45,7 +45,7 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
+    //用户名不能为空  不能重复
     @Column(name = "username", nullable = false, length = 64, unique = true)
     private String username;
 

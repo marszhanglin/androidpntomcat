@@ -83,6 +83,7 @@ public class XmppServer {
           //  locateServer();
             serverName = Config.getString("xmpp.domain", "127.0.0.1")
                     .toLowerCase();
+            //获取spring对象的上下文
             context = new ClassPathXmlApplicationContext("spring-config.xml");
             log.info("Spring Configuration loaded.");
 
@@ -113,10 +114,9 @@ public class XmppServer {
     }
 
     /**
-     * Returns a Spring bean that has the given bean name.
-     *  
+     * Spring对象获取spring-config.xml中的bean
      * @param beanName
-     * @return a Srping bean 
+     * @return
      */
     public Object getBean(String beanName) {
         return context.getBean(beanName);

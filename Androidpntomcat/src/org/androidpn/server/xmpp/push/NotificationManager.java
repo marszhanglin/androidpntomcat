@@ -19,6 +19,12 @@ package org.androidpn.server.xmpp.push;
 
 import java.util.Random;
 
+import org.androidpn.server.model.Notification;
+import org.androidpn.server.model.User;
+import org.androidpn.server.service.NotificationService;
+import org.androidpn.server.service.ServiceLocator;
+import org.androidpn.server.service.UserNotFoundException;
+import org.androidpn.server.service.UserService;
 import org.androidpn.server.xmpp.session.ClientSession;
 import org.androidpn.server.xmpp.session.SessionManager;
 import org.apache.commons.logging.Log;
@@ -40,11 +46,14 @@ public class NotificationManager {
     private final Log log = LogFactory.getLog(getClass());
 
     private SessionManager sessionManager;
-
+    private NotificationService notificationService;
+    private UserService userService;
     /**
      * Constructor.
      */
     public NotificationManager() {
+    	notificationService=ServiceLocator.getNotificationService();
+    	userService=ServiceLocator.getUserService();
         sessionManager = SessionManager.getInstance();
     }
 
@@ -59,7 +68,9 @@ public class NotificationManager {
     public void sendBroadcast(String apiKey, String title, String message,
             String uri) {
         log.debug("sendBroadcast()...");
+      //创建数据包
         IQ notificationIQ = createNotificationIQ(apiKey, title, message, uri);
+        //发送给所有在线用户
         for (ClientSession session : sessionManager.getSessions()) {
             if (session.getPresence().isAvailable()) {
                 notificationIQ.setTo(session.getAddress());
@@ -70,25 +81,53 @@ public class NotificationManager {
 
     /**
      * Sends a newly created notification message to the specific user.
-     * 
+     *  发送给指定用户
      * @param apiKey the API key
      * @param title the title
      * @param message the message details
      * @param uri the uri
-     */
+     */ 
     public void sendNotifcationToUser(String apiKey, String username,
             String title, String message, String uri) {
         log.debug("sendNotifcationToUser()...");
+        //创建数据包
         IQ notificationIQ = createNotificationIQ(apiKey, title, message, uri);
+        //通过用户名获取用户会话
         ClientSession session = sessionManager.getSession(username);
-        if (session != null) {
-            if (session.getPresence().isAvailable()) {
+        if (session != null) { 
+            if (session.getPresence().isAvailable()) {//用户在线可以发送数据  就填充数据并发送
                 notificationIQ.setTo(session.getAddress());
                 session.deliver(notificationIQ);
+            }else{
+            	saveNotification(username, apiKey, title, message, uri);
             }
+        }else{//没有会话   可能不在线  也可能根本不存在该用户
+        	//查看用户是否存在
+        	try {
+				User user=userService.getUserByUsername(username);
+				if(null!=user){//用户存在
+					saveNotification(username, apiKey, title, message, uri);
+				}
+			} catch (UserNotFoundException e) {
+				e.printStackTrace();
+			}
         }
     }
 
+    /**
+     * 将不能发送成功的推送消息保存至数据库 
+     * <br>等待下次链接时发送
+     * @param username
+     * @param apiKey
+     * @param title
+     * @param message
+     * @param uri
+     */
+    private void saveNotification(String username,String apiKey,String  title,String  message,String  uri){
+    	Notification notification=new Notification(apiKey, username, title, message, uri);
+    	notificationService.save(notification);
+    }
+    
     /**
      * Creates a new notification IQ and returns it.
      */
