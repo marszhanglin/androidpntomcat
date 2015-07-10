@@ -26,10 +26,11 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-/** 
+/**
  * A controller class to process the notification related requests.  
- *
- * @author Sehwan Noh (devnoh@gmail.com)
+ * 描述 推送消息的 action
+ * @author Mars zhang
+ * @created 2015年7月10日 上午8:50:16
  */
 public class NotificationController extends MultiActionController {
 

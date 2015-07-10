@@ -17,6 +17,7 @@
  */
 package org.androidpn.server.xmpp.push;
 
+import java.util.List;
 import java.util.Random;
 
 import org.androidpn.server.model.Notification;
@@ -59,7 +60,8 @@ public class NotificationManager {
 
     /**
      * Broadcasts a newly created notification message to all connected users.
-     * 
+     * <br>向所有（在线）用户发送推送数据
+     * <br>修改后:   是向所有用户发送数据   不在线的保存到notification中等待下次连接时发送
      * @param apiKey the API key
      * @param title the title
      * @param message the message details
@@ -70,13 +72,21 @@ public class NotificationManager {
         log.debug("sendBroadcast()...");
       //创建数据包
         IQ notificationIQ = createNotificationIQ(apiKey, title, message, uri);
-        //发送给所有在线用户
+        //获取数据库中所有用户
+        List<User> users=userService.getUsers();
+        //发送给所有在线或不在线用户
+        for(User user:users){
+            String userName=user.getName();
+            send2OneUser(apiKey, userName, title, message, uri, notificationIQ);
+        }
+        
+        /*//发送给所有在线用户
         for (ClientSession session : sessionManager.getSessions()) {
             if (session.getPresence().isAvailable()) {
                 notificationIQ.setTo(session.getAddress());
                 session.deliver(notificationIQ);
             }
-        }
+        }*/
     }
 
     /**
@@ -92,6 +102,23 @@ public class NotificationManager {
         log.debug("sendNotifcationToUser()...");
         //创建数据包
         IQ notificationIQ = createNotificationIQ(apiKey, title, message, uri);
+        send2OneUser(apiKey, username, title, message, uri, notificationIQ);
+    }
+    
+    /**
+     * 
+     * 描述  发送给指定用户  用户不在线就保存到数据库
+     * @author Mars zhang
+     * @created 2015年7月10日 上午9:39:50
+     * @param apiKey
+     * @param username
+     * @param title
+     * @param message
+     * @param uri
+     * @param notificationIQ
+     */
+    private void send2OneUser(String apiKey, String username, String title, String message, String uri,
+            IQ notificationIQ) {
         //通过用户名获取用户会话
         ClientSession session = sessionManager.getSession(username);
         if (session != null) { 
