@@ -37,6 +37,12 @@ import org.xmpp.packet.JID;
  *
  * @author Sehwan Noh (devnoh@gmail.com)
  */
+/**
+ * 
+ * 描述 会话管理
+ * @author Mars zhang
+ * @created 2015年7月10日 下午2:52:29
+ */
 public class SessionManager {
 
     private static final Log log = LogFactory.getLog(SessionManager.class);

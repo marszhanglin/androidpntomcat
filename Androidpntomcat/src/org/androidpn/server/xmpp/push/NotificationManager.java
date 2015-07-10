@@ -35,10 +35,11 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.xmpp.packet.IQ;
 
-/** 
+/**
  * This class is to manage sending the notifcations to the users.  
- *
- * @author Sehwan Noh (devnoh@gmail.com)
+ * 描述  
+ * @author Mars zhang
+ * @created 2015年7月10日 上午9:46:22
  */
 public class NotificationManager {
 
