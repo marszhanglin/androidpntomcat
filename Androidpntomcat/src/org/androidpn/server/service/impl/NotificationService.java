@@ -20,7 +20,15 @@ public class NotificationService implements
 	
 	 
 
-	public void save(Notification notification) {
+	public NotificationDao getNotificationDao() {
+        return notificationDao;
+    }
+
+    public void setNotificationDao(NotificationDao notificationDao) {
+        this.notificationDao = notificationDao;
+    }
+
+    public void save(Notification notification) {
 		notificationDao.save(notification);
 	}
 
